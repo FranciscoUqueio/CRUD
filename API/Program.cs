@@ -1,5 +1,8 @@
+using Aplication.Helpers.MappingProfiles;
 using Aplication.Posts;
+using Doiman;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
@@ -13,8 +16,12 @@ builder.Services.AddDbContext<DataContext>(optionsAction =>
 });
 
 //So fazemos uma vez
-builder.Services.AddMediatR(typeof(CreatePost.CreatePostCommand).Assembly);//configuracao do mediatr
+builder.Services.AddMediatR(typeof(CreatePost.CreatePostCommand).Assembly); //configuracao do mediatr
 
+builder.Services.AddIdentity<User, IdentityRole>().AddDefaultTokenProviders()
+    .AddEntityFrameworkStores<DataContext>();
+
+builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
 // Add services to the container.
 builder.Services.AddControllers();

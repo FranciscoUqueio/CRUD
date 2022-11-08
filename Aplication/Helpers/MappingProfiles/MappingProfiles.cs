@@ -8,8 +8,10 @@ public class MappingProfiles : Profile
 {
     public MappingProfiles()
     {
-        CreateMap<Post, PostDto>().
-            ForMember(dto => dto.UserName, 
-            expression => expression.MapFrom(post => post.User.Username));
+        // CreateMap<Post, PostDto>().
+        //     ForMember(dto => dto.UserName, 
+        //     expression => expression.MapFrom(post => post.User.Username));
+        
+        CreateMap<User, UserDto>();
     }
 }

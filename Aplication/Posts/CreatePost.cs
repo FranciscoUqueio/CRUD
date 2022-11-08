@@ -54,20 +54,13 @@ namespace Aplication.Posts
                     throw new Exception("Error, This post already exist, change de title");
                 }
                 
-
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.UserId);
-                if (user is null)
-                {
-                    throw new Exception("User doesnt exist");
-
-                }
+                
                 
                 var post = new Post()
                 {
                     Creationdate = request.CreationDate,
                     Image = request.Image,
                     Title = request.Title,
-                    User = user
                 };
                 
                 //add os dados na base de dados.
