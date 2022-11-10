@@ -8,6 +8,8 @@ public static class ApplicationServiceExtension
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserNamesList, UserList>();
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IPostRepository, PostRepository>();
         return services;
     }
 }
