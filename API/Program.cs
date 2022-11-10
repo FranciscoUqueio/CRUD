@@ -1,12 +1,9 @@
 using API.Extensions;
 using API.Middlewares;
 using Aplication.Helpers.MappingProfiles;
-using Aplication.Interfaces;
 using Aplication.Posts;
-using Aplication.Users;
 using Doiman;
 using FluentValidation.AspNetCore;
-using Infrastruture.Services;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +12,8 @@ using Persistence;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
+builder.Services.AddIdentityServices(builder.Configuration);
+
 // AddApplicationServices();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 
@@ -26,9 +25,6 @@ builder.Services.AddDbContext<DataContext>(optionsAction =>
 
 //So fazemos uma vez
 builder.Services.AddMediatR(typeof(CreatePost.CreatePostCommand).Assembly); //configuracao do mediatr
-
-builder.Services.AddIdentity<User, IdentityRole>().AddDefaultTokenProviders()
-    .AddEntityFrameworkStores<DataContext>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfiles));
 
@@ -54,6 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

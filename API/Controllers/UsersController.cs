@@ -3,6 +3,7 @@ using Aplication.Interfaces;
 using Aplication.Users;
 using Doiman;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,8 @@ public class UsersController: BaseApiController
     }
 
     [HttpGet]
+    [AllowAnonymous]
+    [Authorize]
     public async Task<ActionResult<List<UserDto>>> GetAllUsers()
     {
         return await _mediator.Send(new ListUsers.ListUsersQuery());
