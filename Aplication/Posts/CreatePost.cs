@@ -3,6 +3,7 @@
 using System.Net;
 using Aplication.Dtos;
 using Aplication.Errors;
+using Aplication.Interfaces;
 using AutoMapper;
 using Doiman;
 using FluentValidation;
@@ -23,7 +24,6 @@ namespace Aplication.Posts
             public string Image { get; set; }
             public DateTimeOffset CreationDate { get; set; } = DateTimeOffset.Now; //inicializo com a data atual
             public string UserId { get; set; }
-            public int  Number { get; set; }
         }
 
         //classe para validarmos os dados que vem do da Classe CreatePostcommand
@@ -33,7 +33,6 @@ namespace Aplication.Posts
             {
                 RuleFor(x => x.Image).NotEmpty();
                 RuleFor(x => x.Title).NotEmpty();
-                RuleFor(x => x.Number).GreaterThan(4);
             }
         }
 
@@ -43,12 +42,15 @@ namespace Aplication.Posts
             private readonly DataContext _context;
             private readonly IMapper _mapper;
             private readonly UserManager<User> _userManager;
+            private readonly IPostRepository _postRepository;
 
-            public CreatePostCommandHandle(DataContext context, IMapper mapper, UserManager<User> userManager)
+            public CreatePostCommandHandle(DataContext context, IMapper mapper, UserManager<User> userManager,
+                IPostRepository postRepository)
             {
                 _context = context;
                 _mapper = mapper;
                 _userManager = userManager;
+                _postRepository = postRepository;
             }
 
             public async Task<PostDto> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -73,19 +75,23 @@ namespace Aplication.Posts
                     User = user
                 };
 
-                //add os dados na base de dados.
-                await _context.Post.AddAsync(post, cancellationToken);
+                // var addPost = await _postRepository.Add(post);
+                
+              _postRepository.Add(post);
 
-                //faz commit, para salvar as alteracoes
-                int result = await _context.SaveChangesAsync(cancellationToken); //vai retornar um valor int
-                if (result < 0)
+               var result = await _postRepository.Complete() < 0;
+               //faz commit, para salvar as alteracoes
+               
+                if (result)
                 {
                     throw new RestException(HttpStatusCode.InternalServerError,"AN ERROR OCCURRED");
                 }
 
-                return _mapper.Map<Post, PostDto>(post);
+                return _mapper.Map<PostDto>(post);
                 //retorna esse post para o mediator na classe PostsController
+
+            }
+               //retorna esse post para o mediator na classe PostsController
             }
         }
     }
-}
